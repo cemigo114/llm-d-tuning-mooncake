@@ -1,0 +1,27 @@
+# EPP configuration with adaptive scorer
+# Replaces static weight configuration with dynamic EMA-based weight adjustment
+# Inspired by NVIDIA Dynamo's deferred routing and GKE Inference Gateway's tuning
+apiVersion: inference.networking.x-k8s.io/v1alpha1
+kind: EndpointPickerConfig
+plugins:
+- type: adaptive-scorer
+  parameters:
+    alpha: 0.15
+    queueVarianceThreshold: 4.0
+    kvUtilSpreadThreshold: 0.3
+    cacheHitRateThreshold: 0.2
+    queueDeferThreshold: 2.0
+    deferDuration: "10ms"
+    prefixBaseWeight: 3.0
+    loadBaseWeight: 2.0
+    activeBaseWeight: 2.0
+- type: decode-filter
+- type: max-score-picker
+- type: single-profile-handler
+schedulingProfiles:
+- name: default
+  plugins:
+  - pluginRef: decode-filter
+  - pluginRef: max-score-picker
+  - pluginRef: adaptive-scorer
+    weight: 1
