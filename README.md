@@ -58,7 +58,11 @@ TAG=pd ./scripts/run-benchmarks.sh
 ./scripts/deploy-adaptive-epp.sh ttl.sh/llm-d-epp-adaptive-XXXXX:24h
 TAG=adaptive ./scripts/run-benchmarks.sh
 
-# Step 4: Compare
+# Step 4: Deploy P/D with MultiConnector (NIXL + CPU offload) for long sequences
+./scripts/deploy-pd-multiconnector.sh
+MAX_INPUT_TOKENS=8192 MAX_REQUESTS=300 TAG=multi_8k ./scripts/run-benchmarks.sh
+
+# Step 5: Compare
 python3 benchmarks/scripts/analyze_results.py benchmarks/results/ --format markdown
 ```
 
@@ -70,7 +74,7 @@ python3 benchmarks/scripts/analyze_results.py benchmarks/results/ --format markd
 
 ## Results
 
-All benchmarks: 500 requests from Mooncake FAST'25 traces, `--max-concurrency 32`, `--max-input-tokens 4096`. Every number independently verified from per-request JSON data (see `benchmarks/results/`).
+All benchmarks: 500 requests from Mooncake FAST'25 traces (300 for 8K tests), `--max-concurrency 32` (16 for 8K), `--max-input-tokens 4096` (8192 for long-sequence tests). Every number independently verified from per-request JSON data (see `benchmarks/results/`).
 
 ### Conversation Trace (multi-turn, high prefix sharing)
 
@@ -114,15 +118,57 @@ Shows the effect of each adaptive scorer iteration on the P/D deployment:
 | TTFT P50 | 251 ms | 243 ms (-3%) | **125 ms (-50%)** |
 | E2E P50 | 0.68 s | 0.73 s (+7%) | **0.45 s (-34%)** |
 
+### MultiConnector: NIXL + CPU Offload (Long Sequences, 8K tokens)
+
+At longer input sequences, HBM fills up and KV cache eviction hurts performance. The `MultiConnector` combines `NixlConnector` (P/D RDMA transfer) with `OffloadingConnector` (100GB CPU RAM cache tier) via vLLM's composable KV connector API.
+
+**Conversation Trace, 300 requests, `--max-input-tokens 8192`, `--max-concurrency 16`:**
+
+| Metric | NIXL-only (P/D) | MultiConnector (NIXL + CPU 100GB) | Delta |
+|--------|-----------------|----------------------------------|-------|
+| Throughput | 2,051 tok/s | **2,942 tok/s** | **+43.4%** |
+| TTFT P50 | 155 ms | **45 ms** | **-71.3%** |
+| TTFT P90 | 2,484 ms | **138 ms** | **-94.4%** |
+| TTFT P99 | 2,946 ms | **210 ms** | **-92.9%** |
+| E2E P90 | 1.24 s | **1.14 s** | **-8.1%** |
+
+**Important: sequence length determines whether CPU offload helps or hurts:**
+
+| Input tokens | NIXL-only | MultiConnector | Winner |
+|-------------|-----------|----------------|--------|
+| 4K (short) | 4,063 tok/s | 2,642 tok/s | NIXL-only (-35% with Multi) |
+| 8K (long) | 2,051 tok/s | 2,942 tok/s | **MultiConnector (+43%)** |
+
+The crossover point is ~6-8K input tokens where KV cache starts exceeding comfortable HBM capacity and the CPU tier provides actual cache hits instead of just overhead.
+
+**vLLM KV transfer config:**
+```json
+{
+  "kv_connector": "MultiConnector",
+  "kv_role": "kv_both",
+  "kv_connector_extra_config": {
+    "connectors": [
+      {"kv_connector": "NixlConnector", "kv_role": "kv_both"},
+      {"kv_connector": "OffloadingConnector", "kv_role": "kv_both",
+       "kv_connector_extra_config": {"cpu_bytes_to_use": 107374182400}}
+    ]
+  }
+}
+```
+
 ### Key Findings
 
-1. **P/D + adaptive v2 is the best config across both workloads.** TTFT P50 improved 61% on conversation and 50% on toolagent vs static P/D.
+1. **P/D + adaptive v2 is the best config for short sequences (4K tokens).** TTFT P50 improved 61% on conversation and 50% on toolagent vs static P/D.
 
-2. **Workload-aware profiles fixed v1's toolagent regression.** v1 hurt toolagent throughput by -15% because it applied conversation-optimized weights (high prefix, low defer threshold) to a diverse-prefix workload. v2 auto-detects completions requests as "diverse" profile and applies load-balanced weights with a higher defer threshold.
+2. **MultiConnector (NIXL + CPU offload) is the best config for long sequences (8K+ tokens).** TTFT P90 improved 94% and throughput +43% when KV cache exceeds HBM.
 
-3. **P/D disaggregation is universally better for E2E latency** because decode workers produce tokens without prefill contention.
+3. **Workload-aware profiles fixed v1's toolagent regression.** v1 hurt toolagent throughput by -15% because it applied conversation-optimized weights (high prefix, low defer threshold) to a diverse-prefix workload. v2 auto-detects completions requests as "diverse" profile and applies load-balanced weights with a higher defer threshold.
 
-4. **Queue threshold deferral (Dynamo-inspired) is the single highest-impact feature.** It prevents stale-metric pile-on where concurrent requests all route to the same "low queue" pod.
+4. **P/D disaggregation is universally better for E2E latency** because decode workers produce tokens without prefill contention.
+
+5. **Queue threshold deferral (Dynamo-inspired) is the single highest-impact feature.** It prevents stale-metric pile-on where concurrent requests all route to the same "low queue" pod.
+
+6. **CPU offload hurts at short sequences, helps at long ones.** The crossover is ~6-8K tokens. Deploy recommendation: use NIXL-only for interactive/short workloads, MultiConnector for batch/long-context workloads.
 
 ## Topology Rationale
 
@@ -177,13 +223,15 @@ llm-d-playbook/
 │   ├── deploy-pd.sh                 # Deploy 2P+2D disaggregated
 │   ├── build-adaptive-epp.sh        # Build adaptive scorer in-cluster
 │   ├── deploy-adaptive-epp.sh       # Hot-swap EPP to adaptive (or --revert)
+│   ├── deploy-pd-multiconnector.sh  # P/D with NIXL + CPU offload (long sequences)
 │   ├── run-benchmarks.sh            # Run Mooncake trace replay
 │   └── teardown.sh                  # Remove everything
 ├── manifests/
 │   ├── gateway.yaml
 │   ├── epp-adaptive-config.yaml     # Adaptive scorer EPP config
 │   ├── colocated/                   # Co-located deployment values
-│   └── pd/                          # P/D deployment values
+│   ├── pd/                          # P/D deployment values (NIXL only)
+│   └── pd-multiconnector/           # P/D + CPU offload (NIXL + OffloadingConnector)
 ├── benchmarks/
 │   ├── scripts/
 │   │   ├── mooncake_replay.py       # Trace replay with prefix sharing
@@ -196,7 +244,9 @@ llm-d-playbook/
 │       ├── adaptive_pd_conversation_500.json # P/D adaptive v1 conv
 │       ├── adaptive_pd_toolagent_500.json    # P/D adaptive v1 tool
 │       ├── adaptive_v2_pd_conversation_500.json  # P/D adaptive v2 conv
-│       └── adaptive_v2_pd_toolagent_500.json     # P/D adaptive v2 tool
+│       ├── adaptive_v2_pd_toolagent_500.json     # P/D adaptive v2 tool
+│       ├── nixl_pd_conversation_8k_300.json      # NIXL-only 8K long-seq
+│       └── multi_pd_conversation_8k_300.json     # MultiConnector 8K long-seq
 ├── adaptive-scorer/
 │   ├── adaptive.go                  # Workload-aware adaptive scorer (Go)
 │   └── adaptive_test.go             # Unit tests
