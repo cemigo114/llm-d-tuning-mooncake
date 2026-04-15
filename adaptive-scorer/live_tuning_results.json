@@ -1,0 +1,72 @@
+{
+  "optuna_best_params": {
+    "alpha": 0.406,
+    "queueVarianceThreshold": 1.069,
+    "kvUtilSpreadThreshold": 0.372,
+    "cacheHitRateThreshold": 0.055,
+    "queueDeferThreshold": 4.904,
+    "prefixBaseWeight": 3.486,
+    "loadBaseWeight": 7.951,
+    "activeBaseWeight": 5.608
+  },
+  "hand_tuned_params": {
+    "alpha": 0.15,
+    "queueVarianceThreshold": 4.0,
+    "kvUtilSpreadThreshold": 0.3,
+    "cacheHitRateThreshold": 0.2,
+    "queueDeferThreshold": 4.0,
+    "prefixBaseWeight": 3.0,
+    "loadBaseWeight": 2.0,
+    "activeBaseWeight": 2.0
+  },
+  "baseline_hand_tuned": {
+    "val": {
+      "throughput": 2136.4,
+      "ttft_p50_ms": 487.6,
+      "ttft_p90_ms": 1141.9,
+      "ttft_p99_ms": 2164.9,
+      "itl_p50_ms": 4.03,
+      "tpsu": 248.4
+    },
+    "test": {
+      "throughput": 2067.8,
+      "ttft_p50_ms": 551.6,
+      "ttft_p90_ms": 1337.7,
+      "ttft_p99_ms": 2069.4,
+      "itl_p50_ms": 4.02,
+      "tpsu": 248.9
+    }
+  },
+  "optuna_optimized": {
+    "train": {
+      "throughput": 2767.2,
+      "ttft_p90_ms": 656.7,
+      "tpsu": 242.2
+    },
+    "val": {
+      "throughput": 1939.0,
+      "ttft_p50_ms": 584.1,
+      "ttft_p90_ms": 1442.3,
+      "ttft_p99_ms": 3707.5,
+      "itl_p50_ms": 4.02,
+      "tpsu": 248.9
+    },
+    "test": {
+      "throughput": 1995.6,
+      "ttft_p50_ms": 606.0,
+      "ttft_p90_ms": 1213.1,
+      "ttft_p99_ms": 3850.4,
+      "itl_p50_ms": 4.05,
+      "tpsu": 246.7
+    }
+  },
+  "overfitting": {
+    "train_val_throughput_gap_pct": 30,
+    "train_test_throughput_gap_pct": 28,
+    "verdict": "OVERFIT \u2014 Optuna params perform worse than hand-tuned on val/test"
+  },
+  "conclusion": "Hand-tuned parameters are a better fit than Optuna-optimized. The live tuning overfit to training data dynamics (warm cache, specific request ordering). The hand-tuned defaults generalize better across unseen data.",
+  "n_trials": 30,
+  "requests_per_trial": 200,
+  "topology": "8P(TP=1)+2D(TP=4)"
+}
