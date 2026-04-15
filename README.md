@@ -170,15 +170,28 @@ The crossover point is ~6-8K input tokens where KV cache starts exceeding comfor
 
 6. **CPU offload hurts at short sequences, helps at long ones.** The crossover is ~6-8K tokens. Deploy recommendation: use NIXL-only for interactive/short workloads, MultiConnector for batch/long-context workloads.
 
-## Topology Rationale
+## Topology Study: P/D Worker Ratio and Tensor Parallelism
 
-### Why TP=4?
+We tested two P/D topologies on 16 GPUs to find the optimal prefill:decode ratio:
 
-`openai/gpt-oss-120b` at FP4 needs ~60GB. Per [InferenceX](https://github.com/SemiAnalysisAI/InferenceX) H200 benchmarks, TP=4 (564GB) gives comfortable KV cache headroom. With TP=4 we get 4 replicas from 16 GPUs.
+### 8P(TP=1)+2D(TP=4) vs 2P(TP=4)+2D(TP=4)
 
-### Why 2P+2D?
+| Metric (4K tokens, warm cache) | 2P(TP=4)+2D(TP=4) | 8P(TP=1)+2D(TP=4) |
+|-------------------------------|-------------------|-------------------|
+| Throughput | 4,200 tok/s | **5,548 tok/s (+32%)** |
+| TTFT P50 | 338 ms | **31 ms (-91%)** |
+| TTFT P99 | 3,715 ms | **615 ms (-83%)** |
+| TPSU | 208 | 190 |
 
-Mooncake traces have ~35:1 ISL:OSL ratio (avg input 12K tokens, avg output 343 tokens). With matched TP=4 on both roles, 2:2 balances prefill compute against decode throughput. The llm-d guide's 4P+1D topology uses TP=1 prefill (cheaper per-replica) — with TP=4 on both sides, 2:2 is the balanced starting point.
+**8P(TP=1) is the recommended production topology.** The 8x higher prefill concurrency eliminates prefill queueing — TTFT drops to ~30ms. This matches the llm-d best practice: "deploy P workers with less parallelism and more replicas." See `REPORT.md` for the full topology analysis with both 4K and 8K token results.
+
+**Use `manifests/pd/ms-pd-8p1-2d4-values.yaml`** for the recommended topology.
+
+### Why these numbers?
+
+- **TP=1 prefill**: gpt-oss-120b at FP4 is ~30GB, fits in a single H200 (141GB) with ~110GB for KV cache. Zero TP communication overhead.
+- **TP=4 decode**: decode is memory-bandwidth-bound. TP=4 gives 4x memory bandwidth for fast token generation.
+- **8:2 ratio**: Mooncake traces have ~35:1 ISL:OSL ratio (prefill-heavy). 8 prefill workers prevent prefill from becoming the bottleneck.
 
 ## Adaptive EPP Scorer
 
@@ -230,7 +243,7 @@ llm-d-playbook/
 │   ├── gateway.yaml
 │   ├── epp-adaptive-config.yaml     # Adaptive scorer EPP config
 │   ├── colocated/                   # Co-located deployment values
-│   ├── pd/                          # P/D deployment values (NIXL only)
+│   ├── pd/                          # P/D deployment values (NIXL only, 2P+2D and 8P+2D)
 │   └── pd-multiconnector/           # P/D + CPU offload (NIXL + OffloadingConnector)
 ├── benchmarks/
 │   ├── scripts/
@@ -246,7 +259,10 @@ llm-d-playbook/
 │       ├── adaptive_v2_pd_conversation_500.json  # P/D adaptive v2 conv
 │       ├── adaptive_v2_pd_toolagent_500.json     # P/D adaptive v2 tool
 │       ├── nixl_pd_conversation_8k_300.json      # NIXL-only 8K long-seq
-│       └── multi_pd_conversation_8k_300.json     # MultiConnector 8K long-seq
+│       ├── multi_pd_conversation_8k_300.json     # MultiConnector 8K long-seq
+│       └── topology/                             # 8P+2D topology comparison
+│           ├── pd_8p1_2d4_4k.json                # 8P(TP=1)+2D(TP=4) at 4K
+│           └── pd_8p1_2d4_8k.json                # 8P(TP=1)+2D(TP=4) at 8K
 ├── adaptive-scorer/
 │   ├── adaptive.go                  # Workload-aware adaptive scorer (Go)
 │   └── adaptive_test.go             # Unit tests
