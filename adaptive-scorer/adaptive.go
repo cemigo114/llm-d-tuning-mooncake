@@ -22,6 +22,10 @@ const (
 	defaultCacheHitRateLow     = 0.2
 	defaultQueueDeferThreshold = 4.0
 
+	// Weight defaults: hand-tuned on Mooncake conversation + toolagent traces.
+	// Validated via Optuna (30 live trials): hand-tuned generalizes better than
+	// Optuna-optimized params (which overfit — 30% train-test gap).
+	// See adaptive-scorer/live_tuning_results.json for evidence.
 	defaultPrefixBaseWeight = 3.0
 	defaultLoadBaseWeight   = 2.0
 	defaultActiveBaseWeight = 2.0
@@ -35,14 +39,19 @@ const (
 	// These control the responsiveness vs smoothness tradeoff.
 	// Q/R > 1: responsive (tracks changes fast)
 	// Q/R < 1: smooth (filters noise)
-	defaultQueueProcessNoise = 1.0 // queues change fast
+	// Rationale: queue depth is the fastest-changing signal, cache hit rate
+	// is the slowest. Noise params are set from first principles (not tuned).
+	defaultQueueProcessNoise = 1.0 // queues change fast under load
 	defaultQueueMeasureNoise = 2.0
-	defaultKVProcessNoise    = 0.5 // KV util is moderately stable
+	defaultKVProcessNoise    = 0.5 // KV util changes moderately
 	defaultKVMeasureNoise    = 3.0
-	defaultCacheProcessNoise = 0.1 // cache hit rate is slow-moving
+	defaultCacheProcessNoise = 0.1 // cache hit rate is a slow-moving signal
 	defaultCacheMeasureNoise = 5.0
 
 	// Online adaptation defaults.
+	// The online sigmoid penalty is the primary adaptation mechanism.
+	// It learns from production traffic (not pre-computed weights), which
+	// is more robust than offline parameter search for this problem class.
 	defaultOnlineDecayWindow = 200
 	defaultTTFTThreshold     = 0.5 // 500ms — endpoints above this get penalized
 )
