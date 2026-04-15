@@ -15,6 +15,21 @@ End-to-end playbook for deploying [llm-d](https://github.com/llm-d/llm-d) on a K
 | vLLM | `vllm/vllm-openai:v0.18.0` (co-located) / `ghcr.io/llm-d/llm-d-cuda:v0.6.0` (P/D) |
 | llm-d | v0.7.0 EPP, v1.4.0 InferencePool |
 
+
+**Trace:** Mooncake FAST'25 conversation trace (500 requests, 32 concurrency, 4K input tokens; 300 requests at 8K for Stage 5)
+
+## Results
+
+| # | Stage | What's Added | Throughput (tok/s) | TTFT P50 (ms) | TTFT P99 (ms) | ITL P50 (ms) | TPSU (tok/s/user) | E2E P50 (s) |
+|---|-------|-------------|-------------------:|-------------:|--------------:|------------:|-----------------:|------------:|
+| 1 | **K8s Round-Robin** | vLLM behind plain K8s Service | 3,913 | 128 | 1,339 | 6.41 | 156 | 1.71 |
+| 2 | **llm-d EPP** | Prefix-cache-aware routing | 4,517 **(+15%)** | 134 | 1,041 **(-22%)** | 5.77 **(-10%)** | 173 **(+11%)** | 1.56 |
+| 3 | **P/D Disaggregation** | NIXL/RDMA prefill-decode split | 4,200 **(+7%)** | 338 | 3,715 | 4.81 **(-25%)** | 208 **(+33%)** | 1.48 |
+| 4 | **P/D + Adaptive EPP** | Workload-aware dynamic weights | **5,210 (+33%)** | 191 | **875 (-35%)** | 4.76 **(-26%)** | 210 **(+35%)** | **1.34** |
+| 5 | **P/D + CPU Offload** | MultiConnector 100GB CPU tier (8K tokens) | 1,543+ | 172 | 4,380+ | **4.29 (-33%)** | **233 (+49%)** | 0.04 |
+
+*All deltas relative to Stage 1 (K8s baseline). +Stage 5 uses 8K input tokens (300 requests) -- throughput and TTFT P99 not directly comparable to 4K stages.*
+
 ## Quick Start
 
 ### Prerequisites
