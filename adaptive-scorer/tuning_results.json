@@ -1,0 +1,102 @@
+{
+  "baseline_params": {
+    "queueProcessNoise": 1.0,
+    "queueMeasureNoise": 2.0,
+    "kvProcessNoise": 0.5,
+    "kvMeasureNoise": 3.0,
+    "cacheProcessNoise": 0.1,
+    "cacheMeasureNoise": 5.0,
+    "queueVarianceThreshold": 4.0,
+    "kvUtilSpreadThreshold": 0.3,
+    "cacheHitRateThreshold": 0.2,
+    "queueDeferThreshold": 4.0,
+    "prefixBaseWeight": 3.0,
+    "loadBaseWeight": 2.0,
+    "activeBaseWeight": 2.0
+  },
+  "optimized_params": {
+    "queueProcessNoise": 0.31591006175517256,
+    "queueMeasureNoise": 3.351128128254305,
+    "kvProcessNoise": 0.5420957233386767,
+    "kvMeasureNoise": 9.69596382690562,
+    "cacheProcessNoise": 0.23100067860716444,
+    "cacheMeasureNoise": 19.02247511735875,
+    "queueVarianceThreshold": 4.731965343211625,
+    "kvUtilSpreadThreshold": 0.12037237792104305,
+    "cacheHitRateThreshold": 0.427085976285436,
+    "queueDeferThreshold": 6.41552814275906,
+    "prefixBaseWeight": 7.376510866966215,
+    "loadBaseWeight": 5.524056173034712,
+    "activeBaseWeight": 1.423505348247533
+  },
+  "baseline": {
+    "train": {
+      "throughput": 515.5278170242814,
+      "ttft_p50": 0.3386235,
+      "ttft_p90": 0.7067564000000001,
+      "ttft_p99": 1.4222700000000001,
+      "itl_p50": 0.005,
+      "tpsu": 200.0,
+      "defers": 499,
+      "score": 0.43522876536194244
+    },
+    "val": {
+      "throughput": 507.63468533788233,
+      "ttft_p50": 0.3562088,
+      "ttft_p90": 0.7226196,
+      "ttft_p99": 1.28414,
+      "itl_p50": 0.005,
+      "tpsu": 200.0,
+      "defers": 210,
+      "score": 0.4322178348270306
+    },
+    "test": {
+      "throughput": 494.69133073450274,
+      "ttft_p50": 0.354044,
+      "ttft_p90": 0.716743,
+      "ttft_p99": 1.4951500000000002,
+      "itl_p50": 0.005,
+      "tpsu": 200.0,
+      "defers": 207,
+      "score": 0.4320638564587602
+    }
+  },
+  "optimized": {
+    "train": {
+      "throughput": 507.11634348412537,
+      "ttft_p50": 0.3726716,
+      "ttft_p90": 0.67181,
+      "ttft_p99": 1.41595,
+      "itl_p50": 0.0045000000000000005,
+      "tpsu": 222.2222222222222,
+      "defers": 315,
+      "score": 0.46202002970095224
+    },
+    "val": {
+      "throughput": 498.6912393529711,
+      "ttft_p50": 0.3891473,
+      "ttft_p90": 0.6884662,
+      "ttft_p99": 1.28414,
+      "itl_p50": 0.005,
+      "tpsu": 200.0,
+      "defers": 157,
+      "score": 0.4366253691482377
+    },
+    "test": {
+      "throughput": 482.95227857825995,
+      "ttft_p50": 0.38741869999999995,
+      "ttft_p90": 0.68008,
+      "ttft_p99": 1.493435,
+      "itl_p50": 0.005,
+      "tpsu": 200.0,
+      "defers": 140,
+      "score": 0.43662418228626076
+    }
+  },
+  "overfitting": {
+    "train_val_gap_pct": 5.4964414787712865,
+    "train_test_gap_pct": 5.496698364165993
+  },
+  "n_trials": 100,
+  "best_trial_number": 98
+}
