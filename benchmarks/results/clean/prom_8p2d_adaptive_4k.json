@@ -1,0 +1,65 @@
+{
+  "label": "8p2d-adaptive-4k",
+  "pods": {
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-w2flm": {
+      "prefix_cache_queries_total": 2116964.0,
+      "prefix_cache_hits_total": 2072755.0,
+      "external_prefix_cache_queries_total": 2116964.0,
+      "external_prefix_cache_hits_total": 2072755.0
+    },
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-x6sc5": {
+      "prefix_cache_queries_total": 2051623.0,
+      "prefix_cache_hits_total": 2003125.0,
+      "external_prefix_cache_queries_total": 2051623.0,
+      "external_prefix_cache_hits_total": 2003125.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-4djrh": {
+      "prefix_cache_queries_total": 910200.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 910200.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-9jhxv": {
+      "prefix_cache_queries_total": 960893.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 960893.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-bnjds": {
+      "prefix_cache_queries_total": 1073772.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1073772.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-fh7hs": {
+      "prefix_cache_queries_total": 271836.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 271836.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-gkwdt": {
+      "prefix_cache_queries_total": 0.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 0.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-m6v92": {
+      "prefix_cache_queries_total": 380500.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 380500.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-mk2l8": {
+      "prefix_cache_queries_total": 402474.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 402474.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-xr6rz": {
+      "prefix_cache_queries_total": 1163949.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1163949.0,
+      "external_prefix_cache_hits_total": 0.0
+    }
+  }
+}

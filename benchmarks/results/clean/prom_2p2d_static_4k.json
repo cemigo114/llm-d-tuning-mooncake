@@ -1,0 +1,29 @@
+{
+  "label": "2p2d-static-4k",
+  "pods": {
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-4bzt5": {
+      "prefix_cache_queries_total": 1393220.0,
+      "prefix_cache_hits_total": 1389596.0,
+      "external_prefix_cache_queries_total": 1393220.0,
+      "external_prefix_cache_hits_total": 1389596.0
+    },
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-n94jj": {
+      "prefix_cache_queries_total": 1232418.0,
+      "prefix_cache_hits_total": 1229216.0,
+      "external_prefix_cache_queries_total": 1232418.0,
+      "external_prefix_cache_hits_total": 1229216.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-6s57w": {
+      "prefix_cache_queries_total": 1312342.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1312342.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-7sv4c": {
+      "prefix_cache_queries_total": 1304422.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1304422.0,
+      "external_prefix_cache_hits_total": 0.0
+    }
+  }
+}

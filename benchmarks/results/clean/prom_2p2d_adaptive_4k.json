@@ -1,0 +1,29 @@
+{
+  "label": "2p2d-adaptive-4k",
+  "pods": {
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-4bzt5": {
+      "prefix_cache_queries_total": 2060874.0,
+      "prefix_cache_hits_total": 2055418.0,
+      "external_prefix_cache_queries_total": 2060874.0,
+      "external_prefix_cache_hits_total": 2055418.0
+    },
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-n94jj": {
+      "prefix_cache_queries_total": 2114434.0,
+      "prefix_cache_hits_total": 2108826.0,
+      "external_prefix_cache_queries_total": 2114434.0,
+      "external_prefix_cache_hits_total": 2108826.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-6s57w": {
+      "prefix_cache_queries_total": 1970221.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1970221.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-7sv4c": {
+      "prefix_cache_queries_total": 2047335.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 2047335.0,
+      "external_prefix_cache_hits_total": 0.0
+    }
+  }
+}
