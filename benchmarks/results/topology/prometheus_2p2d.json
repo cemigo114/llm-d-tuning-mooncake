@@ -1,0 +1,33 @@
+{
+  "topology": "2p4-2d4",
+  "pods": {
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-rd5k8": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 1326420.0,
+      "prefix_cache_hits_total": 1312647.0,
+      "external_prefix_cache_queries_total": 1326420.0,
+      "external_prefix_cache_hits_total": 1312647.0
+    },
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-tfp2c": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 1335954.0,
+      "prefix_cache_hits_total": 1324116.0,
+      "external_prefix_cache_queries_total": 1335954.0,
+      "external_prefix_cache_hits_total": 1324116.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-8cg9t": {
+      "kv_cache_usage_perc": 0.0015747026152831411,
+      "prefix_cache_queries_total": 1348931.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1348931.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-f565dc754-rm2zx": {
+      "kv_cache_usage_perc": 0.0015747026152831411,
+      "prefix_cache_queries_total": 1266328.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 1266328.0,
+      "external_prefix_cache_hits_total": 0.0
+    }
+  }
+}

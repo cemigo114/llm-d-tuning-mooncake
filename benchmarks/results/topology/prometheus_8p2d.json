@@ -1,0 +1,75 @@
+{
+  "topology": "8p1-2d4",
+  "pods": {
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-w2flm": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 1362372.0,
+      "prefix_cache_hits_total": 1354068.0,
+      "external_prefix_cache_queries_total": 1362372.0,
+      "external_prefix_cache_hits_total": 1354068.0
+    },
+    "ms-pd-llm-d-modelservice-decode-64bb67b788-x6sc5": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 1271906.0,
+      "prefix_cache_hits_total": 1264263.0,
+      "external_prefix_cache_queries_total": 1271906.0,
+      "external_prefix_cache_hits_total": 1264263.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-4djrh": {
+      "kv_cache_usage_perc": 0.01139912554653344,
+      "prefix_cache_queries_total": 609327.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 609327.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-9jhxv": {
+      "kv_cache_usage_perc": 0.011555277951280418,
+      "prefix_cache_queries_total": 756952.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 756952.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-bnjds": {
+      "kv_cache_usage_perc": 0.01139912554653344,
+      "prefix_cache_queries_total": 672155.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 672155.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-fh7hs": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 0.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 0.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-gkwdt": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 0.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 0.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-m6v92": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 0.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 0.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-mk2l8": {
+      "kv_cache_usage_perc": 0.0,
+      "prefix_cache_queries_total": 0.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 0.0,
+      "external_prefix_cache_hits_total": 0.0
+    },
+    "ms-pd-llm-d-modelservice-prefill-5594595f55-xr6rz": {
+      "kv_cache_usage_perc": 0.011555277951280418,
+      "prefix_cache_queries_total": 594233.0,
+      "prefix_cache_hits_total": 0.0,
+      "external_prefix_cache_queries_total": 594233.0,
+      "external_prefix_cache_hits_total": 0.0
+    }
+  }
+}
